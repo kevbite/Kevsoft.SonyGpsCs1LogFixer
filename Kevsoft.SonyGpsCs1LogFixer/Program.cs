@@ -1,8 +1,10 @@
 ﻿using System.Globalization;
 
-var dateShift = TimeSpan.FromDays(256);
+var dateShift = TimeSpan.FromDays(7168);
 var sourceFolder = args[0];
 var destinationFolder = args[1];
+
+Directory.CreateDirectory(destinationFolder);
 
 var files = Directory.GetFiles(sourceFolder, "*.log", SearchOption.TopDirectoryOnly);
 
@@ -20,9 +22,10 @@ foreach (var file in files)
         {
             var arguments = line[1..line.LastIndexOf("*", StringComparison.InvariantCulture)].Split(",");
             var dateArgument = arguments[9];
-            var date = DateTime.ParseExact(dateArgument, "yyMMdd", CultureInfo.InvariantCulture);
-            startDate ??= date = date.Add(dateShift);
-            arguments[9] = date.ToString("yyMMdd", CultureInfo.InvariantCulture);
+            var date = DateTime.ParseExact(dateArgument, "ddMMyy", CultureInfo.InvariantCulture);
+            date = date.Add(dateShift);
+            startDate ??= date;
+            arguments[9] = date.ToString("ddMMyy", CultureInfo.InvariantCulture);
 
             line = string.Join(",", arguments);
 
